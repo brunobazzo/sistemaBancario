@@ -1,4 +1,5 @@
 
+from datetime import datetime
 from historico import Historico
 
 
@@ -10,6 +11,7 @@ class Conta():
         self._agencia = "001"
         self._cliente = cliente
         self._historico = Historico()
+        self.saques = 0
 
 
     @property
@@ -31,15 +33,23 @@ class Conta():
     @property
     def historico(self):
         return self._historico
-    
-    
+        
     @classmethod
     def nova_conta(cls, cliente, numero):
         return cls(numero,cliente)
 
     def sacar(self, valor):
         if (valor <= self._saldo and valor > 0):
-            self._saldo -= valor
+            hoje = datetime.now()
+            self.saques = 0
+            for transacao in self.historico.transacoes:
+                if transacao['data'].date() == hoje.date():
+                    self.saques += 1
+
+            if self.saques >= 10:
+                return False
+            else:
+                self._saldo -= valor
             return True
         else:
             return False

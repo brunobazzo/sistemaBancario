@@ -10,7 +10,7 @@ menu = """
 [d] Depositar
 [s] Sacar
 [e] Extrato
-[c] Ciar cliente
+[c] Criar cliente
 [ls] Consultar contas
 [a] Criar conta
 [q] Sair
@@ -39,12 +39,13 @@ def exibir_extrato(clientes):
     if not transacoes:
         print("Cliente nao tem movimentacao na conta.") 
     else:
+        print("======================================")
         for transacao in transacoes:
-            extrato += f"\n{transacao['tipo']}:\n\tRS{transacao['valor']:.2f}"
+            extrato += f"\n{transacao['tipo']}:\tRS{transacao['valor']:.2f}\t{transacao['data'].strftime("%d/%m/%Y %H:%M:%S")}"
 
         print(extrato)
         print(f"\nSaldo:\n\tRS {conta.saldo:2f}")
-        print("FIM")
+        print("======================================")
 
 def sacar(clientes):
     cpf = input("Digite o CPF do cliente:")
@@ -53,15 +54,21 @@ def sacar(clientes):
 
     if not cliente:
         return
-    
-    valor = float(input("informe o valor de saque: "))
-
-    transacao = Saque(valor)
 
     conta = recuperar_conta_cliente(cliente)
     if not conta:
         return
     
+    if conta.saques >= 10:
+        print("Limite de 10 saques diario atingido")
+        return
+    else:
+        print("Possui limite de saque diario atingido",conta.saques)
+    
+    valor = float(input("informe o valor de saque: "))
+
+    transacao = Saque(valor)
+
     cliente.realizar_transacao(conta,transacao)
 
 
